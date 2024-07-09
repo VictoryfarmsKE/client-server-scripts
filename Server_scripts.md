@@ -8,7 +8,7 @@ This script automates the creation of Material Transfer - Variance Stock Entries
 
 This script automates the rejection of job applicants for job openings that have been marked with a custom flag (custom_reject_unoffered_applicants). It retrieves all closed job openings and iterates through associated job applicants. If an applicant's status is not "Accepted", it updates their status to "Rejected" in the Job Applicant record.
 
-**3. Update Grievance Status Scheduler**
+**3. Update Grievance Status**
 
 This scheduler script automates the update of Employee Grievance statuses for grievances related to "Stock loss." It retrieves all Employee Grievance records with the specified subject and checks if any custom actions within these records have expired based on a predefined logic (e.g., 12 months from the date issued). If an action's expiry date has passed, its status is set to "Inactive."
 
@@ -42,7 +42,7 @@ This script checks if a mobile number is provided. If so, it constructs a SQL qu
 
 **11. Create Corresponding Crate No for New Serial No**
 
-This script checks if the item_code matches specific types ("Crate", "Rotogal 600", "Rotogal 1400", "Rotogal 70"). If so, it verifies whether a corresponding VF Crate Number (`vf_crate_no`) exists in the database for the provided serial_no. If not found, it creates a new VF Crate Number entry (VF Crate No) associating the serial_no, item_code, and company from the document. This automation ensures that VF Crate Numbers are systematically managed and recorded for relevant items.
+This script checks if the item_code matches specific types ("Crate", "Rotogal 600", "Rotogal 1400", "Rotogal 70"). If so, it verifies whether a corresponding VF Crate Number (`vf_crate_no`) exists in the database for the provided serial_no. If not found, it creates a new VF Crate Numbr entry (VF Crate No) associating the serial_no, item_code, and company from the document. This automation ensures that VF Crate Numbers are systematically managed and recorded for relevant items.
 
 **12. Delete Integration Request on Payment Request Delete**
 
@@ -80,41 +80,9 @@ This scheduler event runs hourly to manage item pricing transitions within ERPNe
 
 This daily scheduler event script retrieves assets flagged for maintenance (`maintenance_required = 1`) and whose last maintenance date (`last_maintenance_date`) is exactly 91 days ago from the current date. For each qualifying asset, it adjusts the last_maintenance_date by moving it back one day and resetting it to the previous day's date. This automation ensures timely alerts for maintenance actions on assets, enhancing operational efficiency and asset management.
 
-**21. Update Status for Overdue Documents**
-
-This script runs as a scheduler event, checking for documents (e.g., invoices, purchase orders) that are overdue based on their due date. It updates the status of these documents to 'Overdue' and triggers any necessary notifications or follow-up actions to ensure the timely handling of overdue items.
-
-**22. Synchronize Customer Data**
-
-This server script synchronizes customer data between ERPNext and an external CRM system. It periodically fetches updated customer records from the CRM, compares them with existing records in ERPNext, and updates or creates new customer records accordingly. This ensures data consistency across systems and facilitates seamless customer management.
-
-**23. Auto-Approve Purchase Orders**
+**23. Workflow state change - PO**
 
 This script automates the approval of purchase orders that meet certain criteria (e.g., total amount below a threshold, specific suppliers). It runs as a scheduler event, checking for pending purchase orders and approving those that qualify. 
-
-**25. Notify Low Stock Levels**
-
-This server script monitors inventory levels and sends notifications when stock levels fall below a predefined threshold. It runs periodically, checking each item in the inventory and triggering alerts for low-stock items. This helps in maintaining optimal stock levels and preventing stockouts.
-
-**26. Update Employee Leave Balance**
-
-This script updates the leave balance of employees at the end of each month. It calculates the leave accrued, deducts any leave taken, and updates the employee's leave balance accordingly. This ensures accurate tracking of leave entitlements and usage.
-
-**27. Validate Supplier Invoice Details**
-
-This script validates the details of supplier invoices before they are submitted. It checks for discrepancies in invoice amounts, missing fields, and other validation rules. If any issues are found, it raises errors to prevent submission until the issues are resolved.
-
-**28. Calculate Project Costing**
-
-This script calculates the total costing for projects based on timesheets, expenses, and other related documents. It aggregates the costs, updates the project costing fields, and provides a detailed breakdown of costs associated with each project. 
-
-**29. Update Employee Performance Records**
-
-This script updates the performance records of employees based on periodic evaluations. It fetches evaluation results, updates performance metrics, and generates performance reports. 
-
-**30. Synchronize Product Data**
-
-This server script synchronizes product data between ERPNext and an external product management system. It periodically fetches updated product information, compares it with existing records in ERPNext, and updates or creates new product records accordingly. This ensures data consistency and up-to-date product information across systems.
 
 **31. Fetch Stock Allocation Items**  
 This method retrieves items for stock allocation based on the specified warehouse and `transaction date`. It first determines whether the `warehouse` has child warehouses and compiles a list of all relevant warehouses. It then fetches stock order reviews and material requests for these warehouses, gathering items that match pending or submitted material requests. The items, including their allocation details and associated warehouses, are returned for further processing.
@@ -130,10 +98,3 @@ This method creates stock entries for transferring materials from the local comp
 
 **35. Create Stock Allocation**  
 This method creates a stock allocation document based on the 'Stock Order Review' doctype. It validates the document status and source and then identifies the destination branches. For each branch, it calculates the total quantity of items to be allocated and creates a new 'Stock Allocation' document. Items are appended with their respective quantities. Once the document is successfully created, the status of the 'Stock Order Review' is updated to 'Stock Allocated'.
-
-**36. Create Inter-Branch Transfer**  
-This method facilitates the transfer of stock between different branches. It fetches the relevant 'Stock Order Review' and 'Fleet Allocation' doctype and verifies the necessary details. For each destination branch, it creates a stock transfer entry specifying the source and destination warehouses. Items are allocated and added to the stock entry based on the allocation quantities. The stock transfer entries are inserted, completing the material transfer process.
-
-**37. Update Stock Levels**  
-This method updates the stock levels in the warehouse based on the 'Stock Entry' document. It iterates through the items in the stock entry, adjusting the quantities in the respective warehouses. This update ensures that the stock levels are accurate and reflect the latest transactions.
-
