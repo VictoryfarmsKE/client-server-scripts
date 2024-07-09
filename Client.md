@@ -13,16 +13,6 @@ These details are then passed as arguments to the 'send-sms' method, which handl
 
 This script handles various actions related to stock order reviews and fleet allocations. When the form is submitted or refreshed, it triggers functions to create fleet allocations and manage custom buttons based on the document's status. Additionally, it defines a `get_items` event to fetch items from 'Material Request' or 'Region Stock Allocation', populating the 'items' table with relevant data. The script also includes a loader animation for visual feedback during asynchronous operations. Functions `create_fleet_allocation` and `create_stock_entry` handle specific actions i.e creating fleet allocation documents and stock entries.
 
-#### **Server methods used**
-
-**Fetch Stock Allocation Items** This method retrieves items for stock allocation based on the specified warehouse and transaction date. It first determines whether the warehouse has child warehouses and compiles a list of all relevant warehouses. It then fetches stock order reviews and material requests for these warehouses, gathering items that match pending or submitted material requests. The items, including their allocation details and associated warehouses, are returned for further processing.
-
-**Fetch Stock Request Items** This method fetches stock request items for a given warehouse, company, and transaction date. It builds a list of warehouses, including child warehouses, and retrieves material requests that match the specified criteria. For each material request, it gathers the requested items, their quantities, and associated warehouses. The resulting list of items is returned, providing the necessary data for stock requests.
-
-**Create Fleet Allocation** This method creates a fleet allocation document based on the 'Stock Order Review' document. It checks if the document's status and source match the criteria. It then identifies the destination branches and calculates the total quantity for each branch. A new 'Fleet Allocation' document is created, and items are appended with their respective quantities. If the document is successfully created, the status of the 'Stock Order Review' is updated to 'Fleet Allocated'.
-
-**Create Stock Entries LC to Branch** This method creates stock entries for transferring materials from the local company (LC) warehouse to branch warehouses. It first fetches the fleet allocation document associated with the stock order review and verifies the necessary warehouse details. For each branch in the fleet allocation, it creates a new stock transfer entry, specifying the source and destination warehouses. Items are allocated and added to the stock entry based on the allocation quantities. The stock transfer entries are inserted, completing the material transfer process.
-
 #### **3. Sum Qtys and crate number**
 
 This script is designed to enhance inventory management by automatically calculating and updating custom fields for total weight and the number of crates during the stock entry process. When the form is loaded and the document is in draft status (`docstatus` 0), the script iterates through the items, summing up the quantities of all items except crates and counting the crates based on a specific field (`vf_crate_no`). The calculated total weight and crate count are then displayed in custom fields on the form. This automation ensures accurate tracking of inventory metrics, streamlining the logistics and stock handling processes, and aiding in efficient warehouse management.
@@ -104,36 +94,6 @@ This script for the 'Sales Order' form recalculates the `total_weight` field whe
 
 -   **Doctype:** Sales Order
 
-### **Server Methods Descriptions**
-
-##### **Fetch Stock Allocation Items**
-
-This method retrieves items for stock allocation based on the specified warehouse and transaction date. It first determines whether the warehouse has child warehouses and compiles a list of all relevant warehouses. It then fetches stock order reviews and material requests for these warehouses, gathering items that match pending or submitted material requests. The items, including their allocation details and associated warehouses, are returned for further processing.
-
--   **Parameters:** `warehouse`, `transaction_date`
--   **Returns:** List of stock allocation items
-
-##### **Fetch Stock Request Items**
-
-This method fetches stock request items for a given warehouse, company, and transaction date. It builds a list of warehouses, including child warehouses, and retrieves material requests that match the specified criteria. For each material request, it gathers the requested items, their quantities, and associated warehouses. The resulting list of items is returned, providing the necessary data for stock requests.
-
--   **Parameters:** `warehouse`, `company`, `transaction_date`
--   **Returns:** List of stock request items
-
-##### **Create Fleet Allocation**
-
-This method creates a fleet allocation document based on the 'Stock Order Review' document. It checks if the document's status and source match the criteria. It then identifies the destination branches and calculates the total quantity for each branch. A new 'Fleet Allocation' document is created, and items are appended with their respective quantities. If the document is successfully created, the status of the 'Stock Order Review' is updated to 'Fleet Allocated'.
-
--   **Parameters:** `stock_order_review`
--   **Returns:** None (creates Fleet Allocation document)
-
-##### **Create Stock Entries LC to Branch**
-
-This method creates stock entries for transferring materials from the local company (LC) warehouse to branch warehouses. It first fetches the fleet allocation document associated with the stock order review and verifies the necessary warehouse details. For each branch in the fleet allocation, it creates a new stock transfer entry, specifying the source and destination warehouses. Items are allocated and added to the stock entry based on the allocation quantities. The stock transfer entries are inserted, completing the material transfer process.
-
--   **Parameters:** `stock_order_review`
--   **Returns:** None (creates Stock Entry documents)
-
 #### **15. Validate Fields Before Submit**
 
 This script for the 'Purchase Receipt' form ensures that certain fields are validated before the form is submitted. It checks if the `received_by` field is not empty and that the `items` table has at least one entry. If these conditions are not met, it prevents the form submission and displays an error message to the user. This validation helps maintain data integrity by ensuring that all necessary information is provided before a purchase receipt is finalized.
@@ -152,35 +112,6 @@ This script calculates the total quantities and amounts for items whenever an it
 
 -   **Doctype:** Material Request
 
-### **Server Methods Descriptions (Continued)**
-
-##### **Create Stock Allocation**
-
-This method creates a stock allocation document based on the 'Stock Order Review' document. It validates the document status and source, and then identifies the destination branches. For each branch, it calculates the total quantity of items to be allocated and creates a new 'Stock Allocation' document. Items are appended with their respective quantities. Once the document is successfully created, the status of the 'Stock Order Review' is updated to 'Stock Allocated'.
-
--   **Parameters:** `stock_order_review`
--   **Returns:** None (creates Stock Allocation document)
-
-##### **Create Inter-Branch Transfer**
-
-This method facilitates the transfer of stock between different branches. It fetches the relevant 'Stock Order Review' and 'Fleet Allocation' documents and verifies the necessary details. For each destination branch, it creates a stock transfer entry specifying the source and destination warehouses. Items are allocated and added to the stock entry based on the allocation quantities. The stock transfer entries are inserted, completing the material transfer process.
-
--   **Parameters:** `stock_order_review`
--   **Returns:** None (creates Stock Transfer Entry documents)
-
-##### **Update Stock Levels**
-
-This method updates the stock levels in the warehouse based on the 'Stock Entry' document. It iterates through the items in the stock entry, adjusting the quantities in the respective warehouses. This update ensures that the stock levels are accurate and reflect the latest transactions.
-
--   **Parameters:** `stock_entry`
--   **Returns:** None (updates stock levels)
-
-#### **Fetch Material Requests**
-
-This method retrieves material requests for a given warehouse and date range. It fetches all material requests that match the specified criteria and compiles a list of requested items, their quantities, and associated warehouses. The resulting list of items is returned, providing the necessary data for material request processing.
-
--   **Parameters:** `warehouse`, `start_date`, `end_date`
--   **Returns:** List of material request items
 #### **18. Set Default Warehouse on Item Add**
 
 This script for the 'Purchase Order' form sets a default warehouse for newly added items. When an item is added to the `items` table, the script automatically assigns the default warehouse to the `warehouse` field if it is not already set.
@@ -198,36 +129,6 @@ This script is used to synchronize data between the ERPNext system and an extern
 This script for the 'Stock Entry' form checks the stock levels of items in the `items` table. If the stock level of any item falls below a predefined threshold, it displays a notification to the user. This proactive alerting helps users manage inventory more effectively by drawing attention to low-stock items before they run out.
 
 -   **Doctype:** Stock Entry
-
-### **Server Methods Descriptions (Continued)**
-
-##### **Create Delivery Note**
-
-This method generates a delivery note based on the 'Sales Order' document. It validates the sales order status and ensures all required fields are filled. It then creates a new 'Delivery Note' document, copying relevant information such as customer details, item quantities, and delivery dates. This automation streamlines the order fulfillment process by quickly generating delivery notes for approved sales orders.
-
--   **Parameters:** `sales_order`
--   **Returns:** None (creates Delivery Note document)
-
-##### **Generate Purchase Invoice**
-
-This method generates a purchase invoice from a 'Purchase Order' document. It verifies the purchase order details and creates a new 'Purchase Invoice' document, transferring relevant data such as vendor information, item details, and amounts. This method ensures that purchase orders are accurately and efficiently converted into invoices for payment processing.
-
--   **Parameters:** `purchase_order`
--   **Returns:** None (creates Purchase Invoice document)
-
-##### **Update Delivery Status**
-
-This method updates the delivery status of items based on the 'Delivery Note' document. It iterates through the items in the delivery note and adjusts their delivery status in the system. This ensures that the status of each item is accurately reflected, aiding in tracking the progress of deliveries and maintaining up-to-date records.
-
--   **Parameters:** `delivery_note`
--   **Returns:** None (updates item delivery status)
-
-##### **Fetch Purchase Orders**
-
-This method retrieves purchase orders for a specific supplier and date range. It fetches all purchase orders that match the given criteria, compiling a list of orders with their details such as order date, items, and quantities. This data is then returned, providing a comprehensive view of purchase orders for the specified supplier and date range.
-
--   **Parameters:** `supplier`, `start_date`, `end_date`
--   **Returns:** List of purchase orders
 
 #### **21. Calculate Discount on Item Add**
 
@@ -253,36 +154,6 @@ This script for the 'Customer' form sends a notification to the user when there 
 
 -   **Doctype:** Customer
 
- **Server Methods Descriptions (Continued)**
-
-##### **Archive Old Records**
-
-This method archives records that are older than a specified date. It moves these records from the main database to an archive database or storage system, helping to keep the primary database clean and efficient. This method is particularly useful for maintaining performance and managing historical data.
-
--   **Parameters:** `doctype`, `archive_before_date`
--   **Returns:** None (archives records)
-
-##### **Generate Financial Report**
-
-This method generates a financial report for a given period. It compiles data from various financial documents such as invoices, payments, and expenses, and produces a report summarizing the financial status for the specified period. This report can be used for internal review or shared with stakeholders.
-
--   **Parameters:** `start_date`, `end_date`
--   **Returns:** Financial report document
-
-##### **Send Reminder Emails**
-
-This method sends reminder emails for pending tasks or overdue documents. It checks for tasks or documents that are due soon or overdue and sends an email reminder to the responsible users. This method helps ensure that important tasks and documents are not forgotten.
-
--   **Parameters:** `doctype`, `due_date`
--   **Returns:** None (sends emails)
-
-##### **Sync Data with External System**
-
-This method synchronizes data between the ERPNext system and an external system. It identifies changes in the ERP system and updates the external system accordingly, ensuring both systems have consistent and up-to-date data. This method can handle various types of data, including customer information, orders, and inventory levels.
-
--   **Parameters:** `doctype`, `external_system_url`
--   **Returns:** None (synchronizes data)
-
 #### **25. Dynamic Price Update on Selection**
 
 This script for the 'Quotation' form dynamically updates the price of an item when it is selected. It fetches the latest price from the price list based on the selected item and updates the `rate` field accordingly. This ensures that the quotation always reflects the most current pricing information.
@@ -307,36 +178,6 @@ This script for the 'Stock Entry' form sends a notification to the user when sto
 
 -   **Doctype:** Stock Entry
 
-**Server Methods Descriptions**
-
-##### **Calculate Profit Margin**
-
-This method calculates the profit margin for a given product or service. It takes into account the cost price, selling price, and any additional costs to determine the profit margin. 
-
--   **Parameters:** `product_id`
--   **Returns:** Profit margin value
-
-##### **Generate Sales Report**
-
-This method generates a detailed sales report for a specified period. It compiles data from sales orders, invoices, and payments to produce a comprehensive report on sales performance. 
-
--   **Parameters:** `start_date`, `end_date`
--   **Returns:** Sales report document
-
-##### **Update Stock Levels**
-
-This method updates the stock levels in the inventory system. It processes stock entries, adjustments, and transfers to ensure that the stock levels are accurate and up-to-date. 
-
--   **Parameters:** `stock_entry`
--   **Returns:** None (updates stock levels)
-
-##### **Process Payroll**
-
-This method processes the payroll for employees. It calculates salaries, deductions, and benefits based on the payroll settings and generates the payroll slips for each employee. This method ensures that the payroll is processed accurately and on time.
-
--   **Parameters:** `payroll_period`
--   **Returns:** Payroll slips
-
 #### **29. Auto-Assign Project Manager**
 
 This script for the 'Project' form automatically assigns a project manager based on the project's type and budget. It selects the most suitable project manager from a predefined list and updates the `project_manager` field. 
@@ -360,36 +201,6 @@ This script for the 'Payment Entry' form sends a reminder notification to custom
 This script for the 'Employee' form dynamically shows or hides certain fields based on the employee's department. It adjusts the visibility of fields like `training_program`, `certifications`, and `skills` based on the selected department. This enhances the form's usability and relevance.
 
 -   **Doctype:** Employee
-
-#### **Server Methods Descriptions**
-
-#### **Send Monthly Statements**
-
-This method sends monthly financial statements to customers via email. It compiles the financial data for the month and generates a statement document, which is then emailed to the customer. This helps in keeping customers informed about their financial status with the company.
-
--   **Parameters:** `customer_id`, `month`
--   **Returns:** None (emails the statement)
-
-##### **Recalculate Stock Valuation**
-
-This method recalculates the stock valuation based on the latest cost and stock movements. It processes all relevant stock entries and updates the stock valuation in the inventory system. This method is crucial for accurate financial reporting and inventory management.
-
--   **Parameters:** `product_id`
--   **Returns:** Updated stock valuation
-
-##### **Generate Purchase Order**
-
-This method generates a purchase order based on the inventory needs and supplier information. It compiles the necessary details, creates a purchase order document, and sends it to the supplier. This method ensures efficient procurement and inventory replenishment.
-
--   **Parameters:** `inventory_needs`
--   **Returns:** Purchase order document
-
-#### **Update Exchange Rates**
-
-This method updates the exchange rates for multiple currencies. It fetches the latest exchange rates from a reliable source and updates the `exchange_rate` fields in the financial system. This ensures that all financial transactions are processed with the most current exchange rates.
-
--   **Parameters:** None
--   **Returns:** None (updates exchange rates)
 - 
 #### **33. Calculate Overtime**
 
@@ -439,39 +250,3 @@ This script validates the supplier's rating before approving the order. It check
 
 -   **Doctype:** Purchase Order
 
-#### **Server Methods Descriptions**
-
-##### **Generate Annual Financial Report**
-
-This method generates an annual financial report for the company. It compiles financial data from various sources, processes it, and generates a comprehensive report. This report provides insights into the company's financial performance over the year.
-
--   **Parameters:** `year`
--   **Returns:** Annual financial report document
-
-##### **Send Payment Acknowledgment**
-
-This method sends an acknowledgment email to customers upon receiving their payment. It verifies the payment details, updates the payment status, and sends a confirmation email to the customer. 
-
--   **Parameters:** `payment_id`
--   **Returns:** None (sends email)
-
-##### **Update Inventory Levels**
-
-This method updates the inventory levels based on recent stock movements. It processes stock entries, adjustments, and transfers to ensure that inventory records are accurate and up-to-date. 
-
--   **Parameters:** `stock_entries`
--   **Returns:** None (updates inventory levels)
-
-#### **Generate Compliance Report**
-
-This method generates a compliance report based on regulatory requirements. It compiles relevant data, checks for compliance issues, and generates a report that highlights any non-compliance areas. 
-
--   **Parameters:** `regulatory_requirements`
--   **Returns:** Compliance report document
-
-##### **Notify Low Stock Levels**
-
-This method sends notifications to the inventory management team when stock levels fall below the predefined threshold. It checks the current stock levels and triggers notifications for items that need replenishment. This helps in preventing stockouts.
-
--   **Parameters:** `stock_threshold`
--   **Returns:** None (sends notifications)
