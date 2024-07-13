@@ -98,3 +98,47 @@ This method creates stock entries for transferring materials from the local comp
 
 **35. Create Stock Allocation**  
 This method creates a stock allocation document based on the 'Stock Order Review' doctype. It validates the document status and source and then identifies the destination branches. For each branch, it calculates the total quantity of items to be allocated and creates a new 'Stock Allocation' document. Items are appended with their respective quantities. Once the document is successfully created, the status of the 'Stock Order Review' is updated to 'Stock Allocated'.
+
+**36. Fetch Uom**
+The code retrieves the unit of measure (UOM) for a given item code from request. It first fetches the item code from the request and attempts to get the 'material_request_uom' from the "Item" table. If found, it retrieves the conversion factor from the "UOM Conversion Detail" table or defaults to 1 if not available, then sets the response message with the UOM and conversion factor. If no 'material_request_uom' is found, it sets the response message with the 'stock_uom' instead. If an error occurs, it logs the error, shows a message to the user, and sets the response message to `None`.
+
+**37 Get employee Id of currently logged in user**
+
+The code retrieves the employee ID of the currently logged-in user from the "Employee" table. It then fetches and returns a list of employees who report to this user, or an empty list if none are found, while handling any errors that may occur.
+
+**38 Get Actual Qty on Stock Entry Get Item **
+
+The code retrieves the total actual quantity of a specified item in a specified warehouse from the "tabBin" table. It constructs a query with the item code and warehouse, executes the query to get the sum of the actual quantity, and sets the result as the response message.
+
+**39. Get branch target **
+
+The code retrieves the most recent entry for a specified warehouse from the "Branch Target Item" table, filtered by a confirmed document status (submitted). It fetches the target quantity, target percent allocation, and parent fields, orders the results by creation date in descending order, and limits the result to the latest entry. 
+
+**40. Get actual qty for stock order review item **
+
+The code retrieves the total actual quantity of a specified item in a specified warehouse from the "tabBin" table. It executes a query to sum the actual quantity for the given item and warehouse. If a result is found, it rounds the quantity divided by 25; if no result is found, it sets the result to `None`. The final response message is set to the result as a float, defaulting to 0.0 if no quantity is found or if an error occurs, with the error being logged and a message displayed.
+
+**41. Get active serial numbers in warehouse **
+
+The code retrieves all active serial numbers from a specified warehouse and company from the "Serial No" table. It filters the serial numbers by the given warehouse, company, and status ('Active'), and returns the list of serial numbers. 
+
+**42. Fetch items from item_group**
+The code fetches all items from a specified item group, including its subgroups if it has any. It first checks if the given item group has children. If it does, it retrieves all subgroups and repeats the process until all subgroups without children are identified. Then, it fetches items from these final item groups that are not disabled and includes their item codes, material request UOM, and stock UOM. The result is set as the response message.
+'
+**43. Get Stock Entry File Attachment **
+
+The code retrieves file attachments associated with a specific Stock Entry document. It gets the document name and doctype from the form data and fetches all files attached to this document. If there are any attachments, it sets the response message to `True`.
+
+**44. Get Stock Ledger for Transfer **
+
+The code queries the Stock Ledger Entries (SLE) to fetch data for transferring items from one warehouse to another. It specifies criteria such as the warehouse, company, posting date, item code conditions, and ensures that the quantities are positive and transactions are not cancelled. If matching entries are found, it retrieves details like company, voucher type, voucher number, warehouse, item code, quantities, valuation rate, and other relevant information. If data is retrieved successfully, it sets the response message with the queried entries.
+
+**45. Get target warehouses **
+
+This code retrieves a list of warehouses based on a specified region. It starts by fetching the parent warehouse for the given region. Then, it checks if the warehouse has children; if it does, it recursively fetches all sub-warehouses under the parent warehouse, ensuring they are not disabled. The final list includes warehouses without children, along with their parent warehouse information. The response message is set to this final list of warehouses.
+
+**46. Get VF Crate No Actual Qty **
+
+This code retrieves the sum of actual quantities (`actual_qty`) for a specific VF crate number (`vf_crate_no`) across all warehouses belonging to a given company. It queries the "Stock Ledger Entry" table, filtering by the provided crate number and company, ensuring entries are not cancelled (`is_cancelled = 0`), and groups results by the crate number. If matching entries are found, it sets the response message with the sum of quantities grouped by the crate number.
+
+
